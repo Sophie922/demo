@@ -39,3 +39,24 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['text']
         widgets = {'text': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'})}
+
+        class ApplicationForm(forms.ModelForm):
+            class Meta:
+                model = Application
+                fields = ['course', 'start_date', 'payment_method']
+
+                labels = {
+                    'course': 'Выберите курс',
+                    'start_date': 'Дата начала',
+                    'payment_method': 'Способ оплаты',
+                }
+
+                widgets = {
+                    'course': forms.Select(attrs={'class': 'form-select'}),
+                    'start_date': forms.TextInput(attrs={
+                        'class': 'form-control',
+                        'placeholder': 'ДД.ММ.ГГГГ',
+                        'id': 'date-input'
+                    }),
+                    'payment_method': forms.Select(attrs={'class': 'form-select'})
+                }

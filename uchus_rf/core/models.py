@@ -26,7 +26,7 @@ class Application(models.Model):
     ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='applications')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Курс")
     start_date = models.DateField("Дата начала")
     payment_method = models.CharField("Способ оплаты", max_length=50)
     status = models.CharField("Статус", max_length=20, choices=STATUS_CHOICES, default='new')
