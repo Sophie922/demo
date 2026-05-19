@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h4 class="mb-3">Личный кабинет</h4>
+
+<!-- Слайдер (Модуль 2) -->
+<div id="promoSlider" class="carousel slide mb-4 shadow-sm rounded" data-bs-ride="carousel" data-bs-interval="3000">
+    <div class="carousel-inner rounded">
+        <div class="carousel-item active"><img src="https://placehold.co/390x200/4a90e2/white?text=Курс+Python" class="d-block w-100" alt="..."></div>
+        <div class="carousel-item"><img src="https://placehold.co/390x200/e24a4a/white?text=Охрана+труда" class="d-block w-100" alt="..."></div>
+        <div class="carousel-item"><img src="https://placehold.co/390x200/4ae288/white?text=Дизайн" class="d-block w-100" alt="..."></div>
+        <div class="carousel-item"><img src="https://placehold.co/390x200/e2b44a/white?text=Маркетинг" class="d-block w-100" alt="..."></div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#promoSlider" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon bg-dark rounded-circle p-2"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#promoSlider" data-bs-slide="next">
+        <span class="carousel-control-next-icon bg-dark rounded-circle p-2"></span>
+    </button>
+</div>
+
+<a href="{% url 'create_application' %}" class="btn btn-success w-100 mb-4 btn-hover">+ Новая заявка</a>
+
+<h5 class="mb-3">История заявок</h5>
+<div class="list-group">
+    {% for app in applications %}
+    <div class="list-group-item list-group-item-action card-custom p-3">
+        <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1">{{ app.course.title }}</h6>
+            <small class="text-muted">{{ app.start_date }}</small>
+        </div>
+        <p class="mb-1 small">Статус:
+            <span class="badge bg-{% if app.status == 'new' %}warning{% elif app.status == 'in_progress' %}primary{% else %}success{% endif %}">
+                {{ app.get_status_display }}
+            </span>
+        </p>
+
+        {% if app.status != 'new' and not app.review %}
+        <button class="btn btn-sm btn-outline-secondary mt-2" data-bs-toggle="modal" data-bs-target="#reviewModal{{ app.id }}">
+            Оставить отзыв
+        </button>
+        {% elif app.review %}
+        <div class="alert alert-info small mt-2">Отзыв: {{ app.review.text|truncatechars:50 }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Модальное окно для отзыва -->
+    <div class="modal fade" id="reviewModal{{ app.id }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="POST" class="modal-content">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" value="{{ app.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title small">Отзыв к заявке #{{ app.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea name="text" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-sm btn-hover">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted small">У вас пока нет заявок.</p>
+    {% endfor %}
+</div>
+{% endblock %}
